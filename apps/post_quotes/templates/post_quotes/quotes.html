@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quotes</title>
+	<style type="text/css">
+		div {
+			display: inline-block;
+			vertical-align: top;
+			width: 450px;
+			margin-left: 20px;
+		}
+		.quote {
+			width: 400px;
+			border: 1px solid black;
+			text-align: justify;
+			padding: 5px;
+			margin: 10px;
+		}
+		button {
+			background: lightgreen;
+		}
+	</style>
+</head>
+<body>
+	<a href="/log_out">Logout</a><br>
+	<h1>Welcome {{user.alias}}</h1>
+	{% if messages %}
+		<ul class="messages">
+		    {% for message in messages %}
+		    	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+		    {% endfor %}
+		</ul>
+	{% endif %}
+	<p>Quotable Quotes</p>
+	<div style="border: 1px solid black;">
+		{% for quote in quotes %}
+			<div class="quote">
+				<p><span style="color: red;">{{quote.name}}</span>: {{quote.message}}</p>
+				<p>Post by <a href="user/{{quote.post_by.id}}">{{quote.post_by.name}}</a></p>
+				<a href="add/{{quote.id}}"><button>Add to my list</button></a>
+				{% if quote.post_by.id == request.session.user_id %}
+					<a href="delete/{{quote.id}}"><button>Delete</button></a>
+				{% endif %}
+			</div>
+		{% endfor %}
+		
+	</div>
+	<div>
+		<fieldset>
+			<legend>Your Favorites</legend>
+			{% for quote in user_favorites_quotes %}
+				<div class="quote">
+					<p><span style="color: red;">{{quote.name}}</span>: {{quote.message}}</p>
+					<p>Post by <a href="user/{{quote.post_by.id}}">{{quote.post_by.name}}</a></p>
+					<a href="remove/{{quote.id}}"><button>Remove from my list</button></a>
+					{% if quote.post_by.id == request.session.user_id %}
+						<a href="delete/{{quote.id}}"><button>Delete</button></a>
+					{% endif %}
+
+				</div>
+			{% endfor %}
+
+		</fieldset>
+		<br>
+		<h4>Contribute a Quote</h4>
+		<form action="create" method="POST">{% csrf_token %}
+			Quote By: <input type="text" name="name"><br>
+			Message:<br>
+			<textarea rows="4" cols="50" type="text" name="message"></textarea>
+			<br>
+			<input type="submit">
+	</form>
+	</div>
+</body>
+</html>
